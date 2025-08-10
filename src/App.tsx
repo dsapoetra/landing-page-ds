@@ -24,7 +24,7 @@ function App() {
         </div>
         <div className="hero-visual">
           <div className="hero-shape">
-            <img className='profile' src='../public/profile.jpeg' alt='Hero Image' />
+            <img className='profile' src='/profile.jpeg' alt='Hero Image' />
           </div>
         </div>
       </header>
