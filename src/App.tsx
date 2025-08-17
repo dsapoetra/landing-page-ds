@@ -77,13 +77,13 @@ function App() {
             Ready to bring your ideas to life? Let's discuss your next project.
           </p>
           <div className="contact-links">
-            <a href="mailto:your.email@example.com" className="contact-link">
+            <a href="mailto:angga.dimassaputra@gmail.com" className="contact-link">
               Email
             </a>
-            <a href="https://linkedin.com/in/yourprofile" className="contact-link" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/in/dimasangga/" className="contact-link" target="_blank" rel="noopener noreferrer">
               LinkedIn
             </a>
-            <a href="https://github.com/yourusername" className="contact-link" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/dsapoetra" className="contact-link" target="_blank" rel="noopener noreferrer">
               GitHub
             </a>
           </div>
