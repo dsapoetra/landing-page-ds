@@ -25,6 +25,14 @@ export const portfolioItems: PortfolioItem[] = [
     imageUrl: '/images/portfolio/payment.png',
     link: 'https://payment-processing-sooty.vercel.app/',
     category: 'Web Development'
+  },
+    {
+    id: 3,
+    title: 'Loan Calculator',
+    description: 'Loan(mortgage, auto, personal) calculator. Helps you understand the cost of borrowing money.',
+    imageUrl: '/images/portfolio/loan.png',
+    link: 'https://loan-calculator.dsapoetra.com/',
+    category: 'Web Development'
   }
 ];
 
