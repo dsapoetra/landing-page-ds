@@ -33,6 +33,14 @@ export const portfolioItems: PortfolioItem[] = [
     imageUrl: '/images/portfolio/loan.png',
     link: 'https://loan-calculator.dsapoetra.com/',
     category: 'Web Development'
+  },
+  {
+    id: 4,
+    title: 'Currency Converter',
+    description: 'Currency converter. Helps you understand the exchange rate between currencies.',
+    imageUrl: '/images/portfolio/currency.png',
+    link: 'https://currency-converter.dsapoetra.com/',
+    category: 'Web Development'
   }
 ];
 
