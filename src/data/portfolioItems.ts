@@ -41,6 +41,14 @@ export const portfolioItems: PortfolioItem[] = [
     imageUrl: '/images/portfolio/currency.png',
     link: 'https://currency-converter.dsapoetra.com/',
     category: 'Web Development'
+  },
+  {
+    id: 5,
+    title: 'Some Converter',
+    description: 'Various converter. Helps you understand the conversion between units.',
+    imageUrl: '/images/portfolio/some-converter.png',
+    link: 'https://currency-converter.dsapoetra.com/',
+    category: 'Web Development'
   }
 ];
 
