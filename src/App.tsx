@@ -34,7 +34,7 @@ function App() {
         <div className="container">
           <h2 className="section-title">About Me</h2>
           <p className="about-text">
-            From intern to engineering manager—I'm a hands-on leader who still codes. Over 8+ years, I've built backend systems with Go and Node.js across fintech, travel, and edtech industries, while growing from individual contributor to managing high-performing teams. I solve technical challenges, mentor developers, and enjoy scaling both robust systems and the people who build them.
+            From intern to engineering manager—I'm a hands-on leader who still codes. Over 10+ years, I've built backend systems with Go and Node.js across fintech, travel, and edtech industries, while growing from individual contributor to managing high-performing teams. I solve technical challenges, mentor developers, and enjoy scaling both robust systems and the people who build them.
           </p>
         </div>
       </section>
