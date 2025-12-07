@@ -226,7 +226,14 @@ function App() {
                     <h3 className="job-title">{exp.job_title}</h3>
                     <p className="company">{exp.company}</p>
                     <p className="job-period">{exp.period}</p>
-                    <p className="job-description">{exp.description}</p>
+                    <div className="job-description">
+                      {exp.description.split('\n').map((line, idx) => {
+                        if (line.trim().startsWith('-')) {
+                          return <div key={idx} style={{ marginBottom: '0.5rem' }}>{line}</div>;
+                        }
+                        return line.trim() ? <p key={idx}>{line}</p> : null;
+                      })}
+                    </div>
                   </div>
                 </div>
               ))}
