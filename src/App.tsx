@@ -39,6 +39,107 @@ function App() {
         </div>
       </section>
 
+      {/* Skills Section */}
+      <section className="skills">
+        <div className="container">
+          <h2 className="section-title">Skills & Expertise</h2>
+          <div className="skills-grid">
+            <div className="skill-category">
+              <h3 className="skill-category-title">Backend Development</h3>
+              <ul className="skill-list">
+                <li>Go (Golang)</li>
+                <li>Node.js</li>
+                <li>REST APIs</li>
+                <li>Microservices</li>
+                <li>Database Design</li>
+              </ul>
+            </div>
+            <div className="skill-category">
+              <h3 className="skill-category-title">Leadership & Management</h3>
+              <ul className="skill-list">
+                <li>Team Leadership</li>
+                <li>Mentoring</li>
+                <li>Agile Methodologies</li>
+                <li>Project Planning</li>
+                <li>Technical Strategy</li>
+              </ul>
+            </div>
+            <div className="skill-category">
+              <h3 className="skill-category-title">Technologies & Tools</h3>
+              <ul className="skill-list">
+                <li>PostgreSQL / MySQL</li>
+                <li>Redis / MongoDB</li>
+                <li>Docker / Kubernetes</li>
+                <li>Git / CI/CD</li>
+                <li>AWS / GCP</li>
+              </ul>
+            </div>
+            <div className="skill-category">
+              <h3 className="skill-category-title">Industries</h3>
+              <ul className="skill-list">
+                <li>Fintech</li>
+                <li>Travel & Hospitality</li>
+                <li>Education Technology</li>
+                <li>E-commerce</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Job History Section */}
+      <section className="job-history">
+        <div className="container">
+          <h2 className="section-title">Experience</h2>
+          <div className="timeline">
+            <div className="timeline-item">
+              <div className="timeline-marker"></div>
+              <div className="timeline-content">
+                <h3 className="job-title">Engineering Manager</h3>
+                <p className="company">Tech Company</p>
+                <p className="job-period">2020 - Present</p>
+                <p className="job-description">
+                  Leading a team of engineers in building scalable backend systems. Managing project timelines, mentoring developers, and making technical decisions while maintaining hands-on involvement in critical development tasks.
+                </p>
+              </div>
+            </div>
+            <div className="timeline-item">
+              <div className="timeline-marker"></div>
+              <div className="timeline-content">
+                <h3 className="job-title">Senior Backend Engineer</h3>
+                <p className="company">Fintech Startup</p>
+                <p className="job-period">2017 - 2020</p>
+                <p className="job-description">
+                  Developed and maintained payment processing systems using Go and Node.js. Implemented microservices architecture and improved system performance by 40%.
+                </p>
+              </div>
+            </div>
+            <div className="timeline-item">
+              <div className="timeline-marker"></div>
+              <div className="timeline-content">
+                <h3 className="job-title">Backend Engineer</h3>
+                <p className="company">Travel Platform</p>
+                <p className="job-period">2014 - 2017</p>
+                <p className="job-description">
+                  Built and maintained booking and reservation systems. Worked with databases, APIs, and third-party integrations to deliver reliable travel services.
+                </p>
+              </div>
+            </div>
+            <div className="timeline-item">
+              <div className="timeline-marker"></div>
+              <div className="timeline-content">
+                <h3 className="job-title">Software Engineering Intern</h3>
+                <p className="company">Tech Startup</p>
+                <p className="job-period">2013 - 2014</p>
+                <p className="job-description">
+                  Started my career learning full-stack development, contributing to various projects, and building foundational skills in software engineering.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Portfolio Section */}
       <section className="portfolio">
         <div className="container">

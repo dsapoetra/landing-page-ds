@@ -186,6 +186,146 @@ section {
   line-height: 1.8;
 }
 
+/* Skills Section */
+.skills {
+  background-color: var(--color-white);
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+}
+
+.skill-category {
+  background-color: var(--color-light);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+
+.skill-category:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.skill-category-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 2px solid var(--color-quaternary);
+}
+
+.skill-list {
+  list-style: none;
+  padding: 0;
+}
+
+.skill-list li {
+  padding: var(--spacing-xs) 0;
+  color: var(--color-quaternary);
+  font-size: 1rem;
+  position: relative;
+  padding-left: var(--spacing-md);
+}
+
+.skill-list li::before {
+  content: "▪";
+  position: absolute;
+  left: 0;
+  color: var(--color-tertiary);
+  font-size: 1.2rem;
+}
+
+/* Job History Section */
+.job-history {
+  background-color: var(--color-light);
+}
+
+.timeline {
+  max-width: 800px;
+  margin: var(--spacing-lg) auto 0;
+  position: relative;
+  padding-left: var(--spacing-lg);
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-tertiary);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: calc(-1 * var(--spacing-lg) - 6px);
+  top: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  border: 3px solid var(--color-white);
+  box-shadow: 0 0 0 2px var(--color-tertiary);
+}
+
+.timeline-content {
+  background-color: var(--color-white);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.timeline-content:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateX(5px);
+}
+
+.job-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.company {
+  font-size: 1.1rem;
+  color: var(--color-secondary);
+  font-weight: 500;
+  margin-bottom: var(--spacing-xs);
+}
+
+.job-period {
+  font-size: 0.9rem;
+  color: var(--color-quaternary);
+  margin-bottom: var(--spacing-sm);
+  font-style: italic;
+}
+
+.job-description {
+  font-size: 1rem;
+  color: var(--color-quaternary);
+  line-height: 1.6;
+}
+
 /* Portfolio Section */
 .portfolio {
   background-color: var(--color-white);
@@ -414,6 +554,18 @@ section {
     max-width: 200px;
   }
 
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline {
+    padding-left: var(--spacing-md);
+  }
+
+  .timeline-marker {
+    left: calc(-1 * var(--spacing-md) - 6px);
+  }
+
   section {
     padding: var(--spacing-md) 0;
   }
@@ -440,6 +592,27 @@ section {
 
   .contact-links {
     gap: var(--spacing-sm);
+  }
+
+  .skills-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .timeline {
+    padding-left: var(--spacing-sm);
+  }
+
+  .timeline-marker {
+    left: calc(-1 * var(--spacing-sm) - 6px);
+  }
+
+  .timeline-content {
+    padding: var(--spacing-sm);
+  }
+
+  .job-title {
+    font-size: 1.2rem;
   }
 }
 
