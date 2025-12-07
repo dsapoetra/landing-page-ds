@@ -1,24 +1,177 @@
+import { useEffect, useState } from 'react'
 import './App.css'
-import { portfolioItems } from './data/portfolioItems'
+
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
+interface PortfolioItem {
+  id: number;
+  title: string;
+  description: string;
+  image_url: string;
+  link: string;
+  category: string;
+}
+
+interface Skill {
+  id: number;
+  category: string;
+  items: string[];
+}
+
+interface Experience {
+  id: number;
+  job_title: string;
+  company: string;
+  period: string;
+  description: string;
+}
+
+interface HeroContent {
+  title: string;
+  subtitle: string;
+  cta_primary_text?: string;
+  cta_primary_link?: string;
+  cta_secondary_text?: string;
+  cta_secondary_link?: string;
+}
+
+interface AboutContent {
+  content: string;
+}
+
+interface ContactInfo {
+  email: string;
+  linkedin: string;
+  github: string;
+}
+
+interface BlogPost {
+  title: string;
+  link: string;
+  pubDate: string;
+  author: string;
+  contentSnippet: string;
+}
 
 function App() {
+  const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [heroContent, setHeroContent] = useState<HeroContent>({
+    title: 'Developer Who Leads',
+    subtitle: 'Building applications, managing teams, documenting the journey',
+    cta_primary_text: 'View Portfolio',
+    cta_secondary_text: 'Get In Touch'
+  });
+  const [aboutContent, setAboutContent] = useState<AboutContent>({
+    content: 'From intern to engineering manager—I\'m a hands-on leader who still codes. Over 10+ years, I\'ve built backend systems with Go and Node.js across fintech, travel, and edtech industries.'
+  });
+  const [contactInfo, setContactInfo] = useState<ContactInfo>({
+    email: 'angga.dimassaputra@gmail.com',
+    linkedin: 'https://www.linkedin.com/in/dimasangga/',
+    github: 'https://github.com/dsapoetra'
+  });
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [blogEnabled, setBlogEnabled] = useState(false);
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      // Fetch portfolio
+      const portfolioRes = await fetch(`${API_BASE}/portfolio`);
+      if (portfolioRes.ok) {
+        const portfolioData = await portfolioRes.json();
+        setPortfolio(portfolioData.data || []);
+      }
+
+      // Fetch skills
+      const skillsRes = await fetch(`${API_BASE}/skills`);
+      if (skillsRes.ok) {
+        const skillsData = await skillsRes.json();
+        setSkills(skillsData.data || []);
+      }
+
+      // Fetch experiences
+      const expRes = await fetch(`${API_BASE}/experiences`);
+      if (expRes.ok) {
+        const expData = await expRes.json();
+        setExperiences(expData.data || []);
+      }
+
+      // Fetch hero content
+      const heroRes = await fetch(`${API_BASE}/content?type=hero`);
+      if (heroRes.ok) {
+        const heroData = await heroRes.json();
+        if (heroData.data) {
+          setHeroContent(heroData.data);
+        }
+      }
+
+      // Fetch about content
+      const aboutRes = await fetch(`${API_BASE}/content?type=about`);
+      if (aboutRes.ok) {
+        const aboutData = await aboutRes.json();
+        if (aboutData.data) {
+          setAboutContent(aboutData.data);
+        }
+      }
+
+      // Fetch contact info
+      const contactRes = await fetch(`${API_BASE}/content?type=contact`);
+      if (contactRes.ok) {
+        const contactData = await contactRes.json();
+        if (contactData.data) {
+          setContactInfo(contactData.data);
+        }
+      }
+
+      // Fetch blog posts
+      const blogRes = await fetch(`${API_BASE}/blog`);
+      if (blogRes.ok) {
+        const blogData = await blogRes.json();
+        if (blogData.data && blogData.data.length > 0) {
+          setBlogPosts(blogData.data.slice(0, 6));
+          setBlogEnabled(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="app">
       {/* Hero Section */}
       <header className="hero">
         <div className="hero-content">
           <h1 className="hero-title">
-            Developer Who Leads
+            {heroContent.title}
           </h1>
           <p className="hero-subtitle">
-            Building applications, managing teams, documenting the journey
+            {heroContent.subtitle}
           </p>
           <div className="hero-cta">
-            <button className="cta-button primary">
-              View Portfolio
+            <button
+              className="cta-button primary"
+              onClick={() => scrollToSection('portfolio')}
+            >
+              {heroContent.cta_primary_text || 'View Portfolio'}
             </button>
-            <button className="cta-button secondary">
-              Get In Touch
+            <button
+              className="cta-button secondary"
+              onClick={() => scrollToSection('contact')}
+            >
+              {heroContent.cta_secondary_text || 'Get In Touch'}
             </button>
           </div>
         </div>
@@ -34,157 +187,129 @@ function App() {
         <div className="container">
           <h2 className="section-title">About Me</h2>
           <p className="about-text">
-            From intern to engineering manager—I'm a hands-on leader who still codes. Over 10+ years, I've built backend systems with Go and Node.js across fintech, travel, and edtech industries, while growing from individual contributor to managing high-performing teams. I solve technical challenges, mentor developers, and enjoy scaling both robust systems and the people who build them.
+            {aboutContent.content}
           </p>
         </div>
       </section>
 
       {/* Skills Section */}
-      <section className="skills">
-        <div className="container">
-          <h2 className="section-title">Skills & Expertise</h2>
-          <div className="skills-grid">
-            <div className="skill-category">
-              <h3 className="skill-category-title">Backend Development</h3>
-              <ul className="skill-list">
-                <li>Go (Golang)</li>
-                <li>Node.js</li>
-                <li>REST APIs</li>
-                <li>Microservices</li>
-                <li>Database Design</li>
-              </ul>
-            </div>
-            <div className="skill-category">
-              <h3 className="skill-category-title">Leadership & Management</h3>
-              <ul className="skill-list">
-                <li>Team Leadership</li>
-                <li>Mentoring</li>
-                <li>Agile Methodologies</li>
-                <li>Project Planning</li>
-                <li>Technical Strategy</li>
-              </ul>
-            </div>
-            <div className="skill-category">
-              <h3 className="skill-category-title">Technologies & Tools</h3>
-              <ul className="skill-list">
-                <li>PostgreSQL / MySQL</li>
-                <li>Redis / MongoDB</li>
-                <li>Docker / Kubernetes</li>
-                <li>Git / CI/CD</li>
-                <li>AWS / GCP</li>
-              </ul>
-            </div>
-            <div className="skill-category">
-              <h3 className="skill-category-title">Industries</h3>
-              <ul className="skill-list">
-                <li>Fintech</li>
-                <li>Travel & Hospitality</li>
-                <li>Education Technology</li>
-                <li>E-commerce</li>
-              </ul>
+      {skills.length > 0 && (
+        <section className="skills">
+          <div className="container">
+            <h2 className="section-title">Skills & Expertise</h2>
+            <div className="skills-grid">
+              {skills.map((skill) => (
+                <div key={skill.id} className="skill-category">
+                  <h3 className="skill-category-title">{skill.category}</h3>
+                  <ul className="skill-list">
+                    {skill.items.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Job History Section */}
-      <section className="job-history">
-        <div className="container">
-          <h2 className="section-title">Experience</h2>
-          <div className="timeline">
-            <div className="timeline-item">
-              <div className="timeline-marker"></div>
-              <div className="timeline-content">
-                <h3 className="job-title">Engineering Manager</h3>
-                <p className="company">Tech Company</p>
-                <p className="job-period">2020 - Present</p>
-                <p className="job-description">
-                  Leading a team of engineers in building scalable backend systems. Managing project timelines, mentoring developers, and making technical decisions while maintaining hands-on involvement in critical development tasks.
-                </p>
-              </div>
-            </div>
-            <div className="timeline-item">
-              <div className="timeline-marker"></div>
-              <div className="timeline-content">
-                <h3 className="job-title">Senior Backend Engineer</h3>
-                <p className="company">Fintech Startup</p>
-                <p className="job-period">2017 - 2020</p>
-                <p className="job-description">
-                  Developed and maintained payment processing systems using Go and Node.js. Implemented microservices architecture and improved system performance by 40%.
-                </p>
-              </div>
-            </div>
-            <div className="timeline-item">
-              <div className="timeline-marker"></div>
-              <div className="timeline-content">
-                <h3 className="job-title">Backend Engineer</h3>
-                <p className="company">Travel Platform</p>
-                <p className="job-period">2014 - 2017</p>
-                <p className="job-description">
-                  Built and maintained booking and reservation systems. Worked with databases, APIs, and third-party integrations to deliver reliable travel services.
-                </p>
-              </div>
-            </div>
-            <div className="timeline-item">
-              <div className="timeline-marker"></div>
-              <div className="timeline-content">
-                <h3 className="job-title">Software Engineering Intern</h3>
-                <p className="company">Tech Startup</p>
-                <p className="job-period">2013 - 2014</p>
-                <p className="job-description">
-                  Started my career learning full-stack development, contributing to various projects, and building foundational skills in software engineering.
-                </p>
-              </div>
+      {experiences.length > 0 && (
+        <section className="job-history">
+          <div className="container">
+            <h2 className="section-title">Experience</h2>
+            <div className="timeline">
+              {experiences.map((exp) => (
+                <div key={exp.id} className="timeline-item">
+                  <div className="timeline-marker"></div>
+                  <div className="timeline-content">
+                    <h3 className="job-title">{exp.job_title}</h3>
+                    <p className="company">{exp.company}</p>
+                    <p className="job-period">{exp.period}</p>
+                    <p className="job-description">{exp.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Portfolio Section */}
-      <section className="portfolio">
-        <div className="container">
-          <h2 className="section-title">Portfolio</h2>
-          <div className="portfolio-grid">
-            {portfolioItems.map((item) => (
-              <div key={item.id} className="portfolio-item">
-                <a
-                  href={item.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="portfolio-link"
-                >
-                  <div className="portfolio-image">
-                    <img src={item.imageUrl} alt={item.title} />
-                    <div className="portfolio-overlay">
-                      <div className="portfolio-overlay-content">
-                        <h3>{item.title}</h3>
-                        <p>{item.description}</p>
-                        <span className="portfolio-category">{item.category}</span>
+      {portfolio.length > 0 && (
+        <section id="portfolio" className="portfolio">
+          <div className="container">
+            <h2 className="section-title">Portfolio</h2>
+            <div className="portfolio-grid">
+              {portfolio.map((item) => (
+                <div key={item.id} className="portfolio-item">
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="portfolio-link"
+                  >
+                    <div className="portfolio-image">
+                      <img src={item.image_url} alt={item.title} />
+                      <div className="portfolio-overlay">
+                        <div className="portfolio-overlay-content">
+                          <h3>{item.title}</h3>
+                          <p>{item.description}</p>
+                          <span className="portfolio-category">{item.category}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </a>
-              </div>
-            ))}
+                  </a>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Blog Section */}
+      {blogEnabled && blogPosts.length > 0 && (
+        <section className="blog">
+          <div className="container">
+            <h2 className="section-title">Latest Blog Posts</h2>
+            <div className="blog-grid">
+              {blogPosts.map((post, index) => (
+                <article key={index} className="blog-card">
+                  <h3 className="blog-title">{post.title}</h3>
+                  <p className="blog-meta">
+                    {post.author} • {new Date(post.pubDate).toLocaleDateString()}
+                  </p>
+                  <p className="blog-excerpt">{post.contentSnippet}</p>
+                  <a
+                    href={post.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="blog-link"
+                  >
+                    Read more →
+                  </a>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Contact Section */}
-      <section className="contact">
+      <section id="contact" className="contact">
         <div className="container">
           <h2 className="section-title">Let's Connect</h2>
           <p className="contact-text">
             Ready to bring your ideas to life? Let's discuss your next project.
           </p>
           <div className="contact-links">
-            <a href="mailto:angga.dimassaputra@gmail.com" className="contact-link">
+            <a href={`mailto:${contactInfo.email}`} className="contact-link">
               Email
             </a>
-            <a href="https://www.linkedin.com/in/dimasangga/" className="contact-link" target="_blank" rel="noopener noreferrer">
+            <a href={contactInfo.linkedin} className="contact-link" target="_blank" rel="noopener noreferrer">
               LinkedIn
             </a>
-            <a href="https://github.com/dsapoetra" className="contact-link" target="_blank" rel="noopener noreferrer">
+            <a href={contactInfo.github} className="contact-link" target="_blank" rel="noopener noreferrer">
               GitHub
             </a>
           </div>

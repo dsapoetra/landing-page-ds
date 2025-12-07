@@ -7,21 +7,39 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "migrate": "tsx api/db/migrate.ts",
+    "create-admin": "tsx api/db/create-admin.ts"
   },
   "dependencies": {
+    "@types/formidable": "^3.4.6",
+    "@vercel/node": "^5.5.15",
+    "@vercel/postgres": "^0.5.1",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^17.2.3",
+    "formidable": "^3.5.4",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^6.21.1",
+    "rss-parser": "^3.13.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.10.5",
+    "@types/pg": "^8.15.6",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^4.7.0",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "tsx": "^4.7.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.0",
     "vite": "^7.1.0"
