@@ -72,11 +72,19 @@ function App() {
     github: 'https://github.com/dsapoetra'
   });
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [allBlogPosts, setAllBlogPosts] = useState<BlogPost[]>([]);
   const [blogEnabled, setBlogEnabled] = useState(false);
+  const [displayedPostsCount, setDisplayedPostsCount] = useState(6);
 
   useEffect(() => {
     fetchAllData();
   }, []);
+
+  useEffect(() => {
+    if (allBlogPosts.length > 0) {
+      setBlogPosts(allBlogPosts.slice(0, displayedPostsCount));
+    }
+  }, [displayedPostsCount, allBlogPosts]);
 
   const fetchAllData = async () => {
     try {
@@ -133,7 +141,8 @@ function App() {
       if (blogRes.ok) {
         const blogData = await blogRes.json();
         if (blogData.data && blogData.data.length > 0) {
-          setBlogPosts(blogData.data.slice(0, 6));
+          setAllBlogPosts(blogData.data);
+          setBlogPosts(blogData.data.slice(0, displayedPostsCount));
           setBlogEnabled(true);
         }
       }
@@ -147,6 +156,10 @@ function App() {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const loadMorePosts = () => {
+    setDisplayedPostsCount(prev => prev + 6);
   };
 
   return (
@@ -298,6 +311,16 @@ function App() {
                 </article>
               ))}
             </div>
+            {allBlogPosts.length > blogPosts.length && (
+              <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                <button
+                  className="cta-button primary"
+                  onClick={loadMorePosts}
+                >
+                  Load More Posts
+                </button>
+              </div>
+            )}
           </div>
         </section>
       )}
