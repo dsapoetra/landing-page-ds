@@ -205,20 +205,31 @@ function App() {
         </div>
       </section>
 
-      {/* Skills Section */}
-      {skills.length > 0 && (
-        <section className="skills">
+      {/* Portfolio Section */}
+      {portfolio.length > 0 && (
+        <section id="portfolio" className="portfolio">
           <div className="container">
-            <h2 className="section-title">Skills & Expertise</h2>
-            <div className="skills-grid">
-              {skills.map((skill) => (
-                <div key={skill.id} className="skill-category">
-                  <h3 className="skill-category-title">{skill.category}</h3>
-                  <ul className="skill-list">
-                    {skill.items.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
+            <h2 className="section-title">Portfolio</h2>
+            <div className="portfolio-grid">
+              {portfolio.map((item) => (
+                <div key={item.id} className="portfolio-item">
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="portfolio-link"
+                  >
+                    <div className="portfolio-image">
+                      <img src={item.image_url} alt={item.title} />
+                      <div className="portfolio-overlay">
+                        <div className="portfolio-overlay-content">
+                          <h3>{item.title}</h3>
+                          <p>{item.description}</p>
+                          <span className="portfolio-category">{item.category}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
                 </div>
               ))}
             </div>
@@ -255,31 +266,20 @@ function App() {
         </section>
       )}
 
-      {/* Portfolio Section */}
-      {portfolio.length > 0 && (
-        <section id="portfolio" className="portfolio">
+      {/* Skills Section */}
+      {skills.length > 0 && (
+        <section className="skills">
           <div className="container">
-            <h2 className="section-title">Portfolio</h2>
-            <div className="portfolio-grid">
-              {portfolio.map((item) => (
-                <div key={item.id} className="portfolio-item">
-                  <a
-                    href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="portfolio-link"
-                  >
-                    <div className="portfolio-image">
-                      <img src={item.image_url} alt={item.title} />
-                      <div className="portfolio-overlay">
-                        <div className="portfolio-overlay-content">
-                          <h3>{item.title}</h3>
-                          <p>{item.description}</p>
-                          <span className="portfolio-category">{item.category}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
+            <h2 className="section-title">Skills & Expertise</h2>
+            <div className="skills-grid">
+              {skills.map((skill) => (
+                <div key={skill.id} className="skill-category">
+                  <h3 className="skill-category-title">{skill.category}</h3>
+                  <ul className="skill-list">
+                    {skill.items.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
                 </div>
               ))}
             </div>
