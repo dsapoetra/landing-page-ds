@@ -1,0 +1,11 @@
+# robots.txt for dsapoetra.com
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://dsapoetra.com/sitemap.xml
+
+# Block admin areas
+User-agent: *
+Disallow: /admin
+Disallow: /api

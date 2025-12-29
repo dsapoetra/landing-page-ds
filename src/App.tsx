@@ -190,7 +190,7 @@ function App() {
         </div>
         <div className="hero-visual">
           <div className="hero-shape">
-            <img className='profile' src='/profile.jpeg' alt='Hero Image' />
+            <img className='profile' src='/profile.jpeg' alt='Dimas Angga Saputra (dsapoetra) - Engineering Manager and Full Stack Developer' />
           </div>
         </div>
       </header>
@@ -220,7 +220,7 @@ function App() {
                     className="portfolio-link"
                   >
                     <div className="portfolio-image">
-                      <img src={item.image_url} alt={item.title} />
+                      <img src={item.image_url} alt={`${item.title} - Portfolio project by Dimas Angga Saputra (dsapoetra)`} />
                       <div className="portfolio-overlay">
                         <div className="portfolio-overlay-content">
                           <h3>{item.title}</h3>
@@ -349,7 +349,7 @@ function App() {
       {/* Footer */}
       <footer className="footer">
         <div className="container">
-          <p>&copy; 2024 Your Name. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Dimas Angga Saputra (dsapoetra). All rights reserved.</p>
         </div>
       </footer>
     </div>
