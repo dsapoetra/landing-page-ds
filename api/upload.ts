@@ -2,7 +2,9 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { put } from '@vercel/blob';
 import formidable from 'formidable';
 import { authenticateRequest } from './utils/auth';
-import { readFile } from 'fs/promises';
+import { readFile, writeFile, mkdir } from 'fs/promises';
+import { existsSync } from 'fs';
+import path from 'path';
 
 // Disable body parsing, need to handle multipart data
 export const config = {
@@ -10,6 +12,9 @@ export const config = {
     bodyParser: false,
   },
 };
+
+// Check if running locally (no BLOB_READ_WRITE_TOKEN)
+const isLocal = !process.env.BLOB_READ_WRITE_TOKEN;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -65,15 +70,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const ext = uploadedFile.originalFilename?.split('.').pop() || 'jpg';
         const filename = `${timestamp}-${randomString}.${ext}`;
 
-        // Upload to Vercel Blob
-        const blob = await put(filename, fileBuffer, {
-          access: 'public',
-          contentType: uploadedFile.mimetype || 'image/jpeg',
-        });
+        let url: string;
+
+        if (isLocal) {
+          // Local development: save to public/uploads
+          const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+
+          // Create uploads directory if it doesn't exist
+          if (!existsSync(uploadsDir)) {
+            await mkdir(uploadsDir, { recursive: true });
+          }
+
+          const filePath = path.join(uploadsDir, filename);
+          await writeFile(filePath, fileBuffer);
+
+          url = `/uploads/${filename}`;
+        } else {
+          // Production: upload to Vercel Blob
+          const blob = await put(filename, fileBuffer, {
+            access: 'public',
+            contentType: uploadedFile.mimetype || 'image/jpeg',
+          });
+          url = blob.url;
+        }
 
         return res.status(200).json({
           success: true,
-          url: blob.url,
+          url,
           filename: filename,
         });
       } catch (uploadError) {
