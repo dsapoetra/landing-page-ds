@@ -1,10 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import './App.css'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
-
-gsap.registerPlugin(ScrollTrigger)
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
@@ -15,12 +11,6 @@ interface PortfolioItem {
   image_url: string;
   link: string;
   category: string;
-}
-
-interface Skill {
-  id: number;
-  category: string;
-  items: string[];
 }
 
 interface Experience {
@@ -40,10 +30,6 @@ interface HeroContent {
   cta_secondary_link?: string;
 }
 
-interface AboutContent {
-  content: string;
-}
-
 interface ContactInfo {
   email: string;
   linkedin: string;
@@ -60,16 +46,12 @@ interface BlogPost {
 
 function App() {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
-  const [skills, setSkills] = useState<Skill[]>([]);
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [heroContent, setHeroContent] = useState<HeroContent>({
-    title: 'Developer Who Leads',
-    subtitle: 'Building applications, managing teams, documenting the journey',
-    cta_primary_text: 'View Portfolio',
-    cta_secondary_text: 'Get In Touch'
-  });
-  const [aboutContent, setAboutContent] = useState<AboutContent>({
-    content: 'From intern to engineering manager—I\'m a hands-on leader who still codes. Over 10+ years, I\'ve built backend systems with Go and Node.js across fintech, travel, and edtech industries.'
+    title: 'Dimas Angga',
+    subtitle: 'Engineering Manager & Builder',
+    cta_primary_text: 'Get In Touch',
+    cta_secondary_text: 'View My Work'
   });
   const [contactInfo, setContactInfo] = useState<ContactInfo>({
     email: 'angga.dimassaputra@gmail.com',
@@ -77,380 +59,347 @@ function App() {
     github: 'https://github.com/dsapoetra'
   });
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  const [allBlogPosts, setAllBlogPosts] = useState<BlogPost[]>([]);
   const [blogEnabled, setBlogEnabled] = useState(false);
-  const [displayedPostsCount, setDisplayedPostsCount] = useState(6);
-  const [dataLoaded, setDataLoaded] = useState(false);
-
-  const lenisRef = useRef<Lenis | null>(null)
-
-  useEffect(() => {
-    fetchAllData();
-  }, []);
-
-  useEffect(() => {
-    if (allBlogPosts.length > 0) {
-      setBlogPosts(allBlogPosts.slice(0, displayedPostsCount));
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light' || saved === 'dark') return saved;
+      return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
     }
-  }, [displayedPostsCount, allBlogPosts]);
+    return 'dark';
+  });
 
-  // Initialize Lenis smooth scroll
+  const lenisRef = useRef<Lenis | null>(null);
+
+  // Theme
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
+  // Lenis smooth scroll
   useEffect(() => {
     const lenis = new Lenis({
       lerp: 0.1,
       smoothWheel: true,
-    })
-    lenisRef.current = lenis
+    });
+    lenisRef.current = lenis;
 
-    // Connect Lenis to ScrollTrigger
-    lenis.on('scroll', ScrollTrigger.update)
-
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000)
-    })
-    gsap.ticker.lagSmoothing(0)
-
-    // Refresh on resize
-    const handleResize = () => {
-      ScrollTrigger.refresh()
-    }
-    window.addEventListener('resize', handleResize)
+    const raf = (time: number) => {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    };
+    requestAnimationFrame(raf);
 
     return () => {
-      window.removeEventListener('resize', handleResize)
-      lenis.destroy()
-      lenisRef.current = null
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
-    }
-  }, [])
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, []);
 
-  // Setup horizontal scroll animations after data is loaded
+  // Scroll reveal with IntersectionObserver
   useEffect(() => {
-    if (!dataLoaded) return;
-
-    // Small delay to ensure DOM is ready
-    const timer = setTimeout(() => {
-      // Helper function to setup horizontal scroll
-      const setupHorizontalScroll = (sectionClass: string, panelClass: string) => {
-        const section = document.querySelector(`.${sectionClass}`) as HTMLElement
-        if (section) {
-          const wrapper = section.querySelector('.horizontal-wrapper') as HTMLElement
-          if (wrapper) {
-            const panels = gsap.utils.toArray<HTMLElement>(`.${panelClass}`, wrapper)
-            const totalWidth = panels.reduce((acc, panel) => acc + panel.offsetWidth, 0)
-            const scrollDistance = totalWidth - window.innerWidth
-
-            if (scrollDistance > 0) {
-              gsap.to(wrapper, {
-                x: -scrollDistance,
-                ease: 'none',
-                scrollTrigger: {
-                  trigger: section,
-                  start: 'top top',
-                  end: () => `+=${scrollDistance}`,
-                  pin: true,
-                  scrub: 1,
-                  invalidateOnRefresh: true,
-                  anticipatePin: 1,
-                },
-              })
-            }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
           }
-        }
-      }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
 
-      // Setup horizontal scroll sections (About and Portfolio only)
-      setupHorizontalScroll('about-horizontal', 'about-panel')
-      setupHorizontalScroll('portfolio-horizontal', 'portfolio-panel')
+    const elements = document.querySelectorAll('.reveal');
+    elements.forEach(el => observer.observe(el));
 
-      ScrollTrigger.refresh()
-    }, 100)
+    return () => observer.disconnect();
+  }, [portfolio, experiences, blogPosts]);
 
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [dataLoaded, portfolio])
+  // Fetch data
+  useEffect(() => {
+    fetchAllData();
+  }, []);
 
   const fetchAllData = async () => {
     try {
-      // Fetch portfolio
-      const portfolioRes = await fetch(`${API_BASE}/portfolio`);
-      if (portfolioRes.ok) {
-        const portfolioData = await portfolioRes.json();
-        setPortfolio(portfolioData.data || []);
+      const [portfolioRes, expRes, heroRes, contactRes, blogRes] = await Promise.allSettled([
+        fetch(`${API_BASE}/portfolio`),
+        fetch(`${API_BASE}/experiences`),
+        fetch(`${API_BASE}/content?type=hero`),
+        fetch(`${API_BASE}/content?type=contact`),
+        fetch(`${API_BASE}/blog`),
+      ]);
+
+      if (portfolioRes.status === 'fulfilled' && portfolioRes.value.ok) {
+        const data = await portfolioRes.value.json();
+        setPortfolio(data.data || []);
       }
 
-      // Fetch skills
-      const skillsRes = await fetch(`${API_BASE}/skills`);
-      if (skillsRes.ok) {
-        const skillsData = await skillsRes.json();
-        setSkills(skillsData.data || []);
+      if (expRes.status === 'fulfilled' && expRes.value.ok) {
+        const data = await expRes.value.json();
+        setExperiences(data.data || []);
       }
 
-      // Fetch experiences
-      const expRes = await fetch(`${API_BASE}/experiences`);
-      if (expRes.ok) {
-        const expData = await expRes.json();
-        setExperiences(expData.data || []);
+      if (heroRes.status === 'fulfilled' && heroRes.value.ok) {
+        const data = await heroRes.value.json();
+        if (data.data) setHeroContent(data.data);
       }
 
-      // Fetch hero content
-      const heroRes = await fetch(`${API_BASE}/content?type=hero`);
-      if (heroRes.ok) {
-        const heroData = await heroRes.json();
-        if (heroData.data) {
-          setHeroContent(heroData.data);
-        }
+      if (contactRes.status === 'fulfilled' && contactRes.value.ok) {
+        const data = await contactRes.value.json();
+        if (data.data) setContactInfo(data.data);
       }
 
-      // Fetch about content
-      const aboutRes = await fetch(`${API_BASE}/content?type=about`);
-      if (aboutRes.ok) {
-        const aboutData = await aboutRes.json();
-        if (aboutData.data) {
-          setAboutContent(aboutData.data);
-        }
-      }
-
-      // Fetch contact info
-      const contactRes = await fetch(`${API_BASE}/content?type=contact`);
-      if (contactRes.ok) {
-        const contactData = await contactRes.json();
-        if (contactData.data) {
-          setContactInfo(contactData.data);
-        }
-      }
-
-      // Fetch blog posts
-      const blogRes = await fetch(`${API_BASE}/blog`);
-      if (blogRes.ok) {
-        const blogData = await blogRes.json();
-        if (blogData.data && blogData.data.length > 0) {
-          setAllBlogPosts(blogData.data);
-          setBlogPosts(blogData.data.slice(0, displayedPostsCount));
+      if (blogRes.status === 'fulfilled' && blogRes.value.ok) {
+        const data = await blogRes.value.json();
+        if (data.data && data.data.length > 0) {
+          setBlogPosts(data.data.slice(0, 4));
           setBlogEnabled(true);
         }
       }
-
-      setDataLoaded(true);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setDataLoaded(true);
     }
   };
 
-  const scrollToSection = (sectionId: string) => {
+  const scrollToSection = useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element && lenisRef.current) {
-      lenisRef.current.scrollTo(element, { duration: 1.5 });
+      lenisRef.current.scrollTo(element, { duration: 1.2 });
     } else if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-
-  const loadMorePosts = () => {
-    setDisplayedPostsCount(prev => prev + 6);
-  };
+  }, []);
 
   return (
     <div className="app">
-      {/* Hero Section - Vertical Scroll */}
-      <header className="hero">
-        <div className="hero-content">
-          <h1 className="hero-title">
-            {heroContent.title}
-          </h1>
-          <p className="hero-subtitle">
-            {heroContent.subtitle}
-          </p>
-          <div className="hero-cta">
-            <button
-              className="cta-button primary"
-              onClick={() => scrollToSection('portfolio')}
-            >
-              {heroContent.cta_primary_text || 'View Portfolio'}
+      {/* Navigation */}
+      <nav className="nav">
+        <div className="nav-inner">
+          <span className="nav-logo">dsapoetra</span>
+          <div className="nav-links">
+            <button className="nav-link" onClick={() => scrollToSection('what-i-do')}>
+              What I Do
+            </button>
+            {experiences.length > 0 && (
+              <button className="nav-link" onClick={() => scrollToSection('experience')}>
+                Experience
+              </button>
+            )}
+            {portfolio.length > 0 && (
+              <button className="nav-link" onClick={() => scrollToSection('portfolio')}>
+                Work
+              </button>
+            )}
+            <button className="nav-link" onClick={() => scrollToSection('contact')}>
+              Contact
             </button>
             <button
-              className="cta-button secondary"
-              onClick={() => scrollToSection('contact')}
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             >
-              {heroContent.cta_secondary_text || 'Get In Touch'}
+              {theme === 'dark' ? '☀' : '☾'}
             </button>
           </div>
         </div>
-        <div className="hero-visual">
-          <div className="hero-shape">
-            <img className='profile' src='/profile.jpeg' alt='Dimas Angga Saputra (dsapoetra) - Engineering Manager and Full Stack Developer' />
+      </nav>
+
+      {/* Hero */}
+      <header className="hero">
+        <div className="container">
+          <div className="hero-content">
+            <p className="hero-greeting">Hi, I'm</p>
+            <h1 className="hero-name">{heroContent.title || 'Dimas Angga'}</h1>
+            <p className="hero-title">
+              {heroContent.subtitle || 'Engineering Manager & Builder'}
+            </p>
+            <p className="hero-description">
+              I lead engineering teams and still ship code. 10+ years across fintech, ecommerce, and edtech — currently Engineering Manager at OLX Indonesia, available for fractional web work.
+            </p>
+            <div className="hero-cta">
+              <button
+                className="btn btn-primary"
+                onClick={() => scrollToSection('contact')}
+              >
+                {heroContent.cta_primary_text || 'Get In Touch'}
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => scrollToSection('portfolio')}
+              >
+                {heroContent.cta_secondary_text || 'View My Work'} ↓
+              </button>
+            </div>
+          </div>
+          <div className="hero-visual">
+            <img
+              className="hero-photo"
+              src="/profile.jpeg"
+              alt="Dimas Angga Saputra"
+              loading="eager"
+            />
           </div>
         </div>
       </header>
 
-      {/* About Section - Horizontal Scroll */}
-      <section className="about-horizontal horizontal-section">
-        <div className="horizontal-wrapper">
-          <div className="horizontal-panel about-panel about-intro">
-            <div className="panel-content">
-              <h2 className="section-title">About Me</h2>
-              <p className="panel-text">Scroll to explore my journey</p>
-            </div>
+      {/* What I Do */}
+      <section id="what-i-do" className="section section-alt">
+        <div className="container">
+          <div className="reveal">
+            <span className="section-label">Capabilities</span>
+            <h2 className="section-title">What I Do</h2>
           </div>
-          <div className="horizontal-panel about-panel about-experience">
-            <div className="panel-content">
-              <h3 className="panel-title">10+ Years</h3>
-              <p className="panel-text">From intern to engineering manager, I'm a hands-on leader who still codes.</p>
+          <div className="what-i-do-grid reveal-stagger">
+            <div className="what-i-do-column reveal">
+              <h3>I Lead</h3>
+              <div className="capability-item">Engineering team management & growth</div>
+              <div className="capability-item">Technical strategy & architecture decisions</div>
+              <div className="capability-item">Cross-team collaboration & alignment</div>
+              <div className="capability-item">Hiring, mentoring & performance development</div>
+              <div className="capability-item">Delivery planning & execution</div>
             </div>
-          </div>
-          <div className="horizontal-panel about-panel about-skills">
-            <div className="panel-content">
-              <h3 className="panel-title">Backend Systems</h3>
-              <p className="panel-text">I've built backend systems with Go and Node.js across fintech, travel, and edtech industries.</p>
-            </div>
-          </div>
-          <div className="horizontal-panel about-panel about-leadership">
-            <div className="panel-content">
-              <h3 className="panel-title">Leadership</h3>
-              <p className="panel-text">{aboutContent.content}</p>
+            <div className="what-i-do-column reveal">
+              <h3>I Build</h3>
+              <div className="capability-item">Backend systems in Go & Java</div>
+              <div className="capability-item">Full-stack applications with Next.js</div>
+              <div className="capability-item">Database design & query optimization</div>
+              <div className="capability-item">API architecture & service integrations</div>
+              <div className="capability-item">CI/CD pipelines & cloud infrastructure</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Portfolio Section - Horizontal Scroll */}
-      {portfolio.length > 0 && (
-        <section id="portfolio" className="portfolio-horizontal horizontal-section">
-          <div className="horizontal-wrapper">
-            <div className="horizontal-panel portfolio-panel portfolio-intro-panel">
-              <div className="panel-content">
-                <h2 className="section-title">Portfolio</h2>
-                <p className="panel-text">Explore my work</p>
-              </div>
+      {/* Experience */}
+      {experiences.length > 0 && (
+        <section id="experience" className="section">
+          <div className="container">
+            <div className="reveal">
+              <span className="section-label">Career</span>
+              <h2 className="section-title">Experience</h2>
             </div>
-            {portfolio.map((item) => (
-              <div key={item.id} className="horizontal-panel portfolio-panel">
+            <div className="timeline reveal-stagger">
+              {experiences.map((exp) => (
+                <div key={exp.id} className="timeline-item reveal">
+                  <div className="timeline-dot"></div>
+                  <div className="timeline-header">
+                    <span className="timeline-role">{exp.job_title}</span>
+                    <span className="timeline-company">at {exp.company}</span>
+                  </div>
+                  <div className="timeline-period">{exp.period}</div>
+                  <div className="timeline-description">
+                    {exp.description.split('\n').map((line, idx) => {
+                      if (line.trim().startsWith('-')) {
+                        return <div key={idx}>{line}</div>;
+                      }
+                      return line.trim() ? <p key={idx}>{line}</p> : null;
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Portfolio */}
+      {portfolio.length > 0 && (
+        <section id="portfolio" className="section section-alt">
+          <div className="container">
+            <div className="reveal">
+              <span className="section-label">Projects</span>
+              <h2 className="section-title">Selected Work</h2>
+            </div>
+            <div className="portfolio-grid reveal-stagger">
+              {portfolio.map((item) => (
                 <a
+                  key={item.id}
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="portfolio-card"
+                  className="portfolio-card reveal"
                 >
-                  <div className="portfolio-image">
-                    <img src={item.image_url} alt={`${item.title} - Portfolio project by Dimas Angga Saputra (dsapoetra)`} />
+                  <div className="portfolio-card-image">
+                    <img
+                      src={item.image_url}
+                      alt={item.title}
+                      loading="lazy"
+                    />
                   </div>
-                  <div className="portfolio-info">
+                  <div className="portfolio-card-body">
                     <h3>{item.title}</h3>
                     <p>{item.description}</p>
-                    <span className="portfolio-category">{item.category}</span>
+                    <span className="portfolio-tag">{item.category}</span>
                   </div>
                 </a>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Experience Section - Vertical */}
-      {experiences.length > 0 && (
-        <section className="job-history">
-          <div className="container">
-            <h2 className="section-title">Experience</h2>
-            <div className="timeline">
-              {experiences.map((exp) => (
-                <div key={exp.id} className="timeline-item">
-                  <div className="timeline-marker"></div>
-                  <div className="timeline-content">
-                    <h3 className="job-title">{exp.job_title}</h3>
-                    <p className="company">{exp.company}</p>
-                    <p className="job-period">{exp.period}</p>
-                    <div className="job-description">
-                      {exp.description.split('\n').map((line, idx) => {
-                        if (line.trim().startsWith('-')) {
-                          return <div key={idx} style={{ marginBottom: '0.5rem' }}>{line}</div>;
-                        }
-                        return line.trim() ? <p key={idx}>{line}</p> : null;
-                      })}
-                    </div>
-                  </div>
-                </div>
               ))}
             </div>
           </div>
         </section>
       )}
 
-      {/* Skills Section */}
-      {skills.length > 0 && (
-        <section className="skills">
-          <div className="container">
-            <h2 className="section-title">Skills & Expertise</h2>
-            <div className="skills-grid">
-              {skills.map((skill) => (
-                <div key={skill.id} className="skill-category">
-                  <h3 className="skill-category-title">{skill.category}</h3>
-                  <ul className="skill-list">
-                    {skill.items.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Blog Section - Vertical */}
+      {/* Blog */}
       {blogEnabled && blogPosts.length > 0 && (
-        <section className="blog">
+        <section id="blog" className="section">
           <div className="container">
-            <h2 className="section-title">Latest Blog Posts</h2>
-            <div className="blog-grid">
+            <div className="reveal">
+              <span className="section-label">Writing</span>
+              <h2 className="section-title">Recent Posts</h2>
+            </div>
+            <div className="blog-list reveal">
               {blogPosts.map((post, index) => (
-                <article key={index} className="blog-card">
-                  <h3 className="blog-title">{post.title}</h3>
-                  <p className="blog-meta">
-                    {post.author} • {new Date(post.pubDate).toLocaleDateString()}
-                  </p>
-                  <p className="blog-excerpt">{post.contentSnippet}</p>
-                  <a
-                    href={post.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="blog-link"
-                  >
-                    Read more →
-                  </a>
-                </article>
+                <a
+                  key={index}
+                  href={post.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="blog-item"
+                >
+                  <div className="blog-item-content">
+                    <div className="blog-item-title">{post.title}</div>
+                    <div className="blog-item-excerpt">{post.contentSnippet}</div>
+                  </div>
+                  <div className="blog-item-date">
+                    {new Date(post.pubDate).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </div>
+                </a>
               ))}
             </div>
-            {allBlogPosts.length > blogPosts.length && (
-              <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                <button
-                  className="cta-button primary"
-                  onClick={loadMorePosts}
-                >
-                  Load More Posts
-                </button>
-              </div>
-            )}
           </div>
         </section>
       )}
 
-      {/* Contact Section */}
-      <section id="contact" className="contact">
+      {/* Contact */}
+      <section id="contact" className="section section-alt contact">
         <div className="container">
-          <h2 className="section-title">Let's Connect</h2>
-          <p className="contact-text">
-            Ready to bring your ideas to life? Let's discuss your next project.
-          </p>
-          <div className="contact-links">
-            <a href={`mailto:${contactInfo.email}`} className="contact-link">
-              Email
+          <div className="reveal">
+            <h2 className="contact-heading">Let's work together.</h2>
+            <p className="contact-text">
+              Whether you need an engineering leader or a builder who ships — I'd like to hear from you.
+            </p>
+            <a
+              href={`mailto:${contactInfo.email}`}
+              className="contact-email"
+            >
+              {contactInfo.email}
             </a>
-            <a href={contactInfo.linkedin} className="contact-link" target="_blank" rel="noopener noreferrer">
+          </div>
+          <div className="contact-social reveal">
+            <a href={contactInfo.linkedin} target="_blank" rel="noopener noreferrer">
               LinkedIn
             </a>
-            <a href={contactInfo.github} className="contact-link" target="_blank" rel="noopener noreferrer">
+            <a href={contactInfo.github} target="_blank" rel="noopener noreferrer">
               GitHub
             </a>
           </div>
@@ -460,11 +409,11 @@ function App() {
       {/* Footer */}
       <footer className="footer">
         <div className="container">
-          <p>&copy; {new Date().getFullYear()} Dimas Angga Saputra (dsapoetra). All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Dimas Angga Saputra. All rights reserved.</p>
         </div>
       </footer>
     </div>
-  )
+  );
 }
 
 export default App
