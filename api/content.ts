@@ -65,7 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           );
         }
       } else if (type === 'hero') {
-        const { title, subtitle, cta_primary_text, cta_primary_link, cta_secondary_text, cta_secondary_link } = content;
+        const { title, subtitle, description, cta_primary_text, cta_primary_link, cta_secondary_text, cta_secondary_link } = content;
 
         const existing = await query('SELECT id FROM hero_content LIMIT 1');
         if (existing.rows.length > 0) {
@@ -73,19 +73,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             `UPDATE hero_content SET
                title = COALESCE($1, title),
                subtitle = COALESCE($2, subtitle),
-               cta_primary_text = COALESCE($3, cta_primary_text),
-               cta_primary_link = COALESCE($4, cta_primary_link),
-               cta_secondary_text = COALESCE($5, cta_secondary_text),
-               cta_secondary_link = COALESCE($6, cta_secondary_link),
+               description = COALESCE($3, description),
+               cta_primary_text = COALESCE($4, cta_primary_text),
+               cta_primary_link = COALESCE($5, cta_primary_link),
+               cta_secondary_text = COALESCE($6, cta_secondary_text),
+               cta_secondary_link = COALESCE($7, cta_secondary_link),
                updated_at = CURRENT_TIMESTAMP
-             WHERE id = $7 RETURNING *`,
-            [title, subtitle, cta_primary_text, cta_primary_link, cta_secondary_text, cta_secondary_link, existing.rows[0].id]
+             WHERE id = $8 RETURNING *`,
+            [title, subtitle, description, cta_primary_text, cta_primary_link, cta_secondary_text, cta_secondary_link, existing.rows[0].id]
           );
         } else {
           result = await query(
-            `INSERT INTO hero_content (title, subtitle, cta_primary_text, cta_primary_link, cta_secondary_text, cta_secondary_link)
-             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [title, subtitle, cta_primary_text, cta_primary_link, cta_secondary_text, cta_secondary_link]
+            `INSERT INTO hero_content (title, subtitle, description, cta_primary_text, cta_primary_link, cta_secondary_text, cta_secondary_link)
+             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+            [title, subtitle, description, cta_primary_text, cta_primary_link, cta_secondary_text, cta_secondary_link]
           );
         }
       } else if (type === 'contact') {

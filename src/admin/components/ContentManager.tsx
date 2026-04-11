@@ -100,6 +100,15 @@ function ContentManager() {
               />
             </div>
             <div className="form-group">
+              <label>Description</label>
+              <textarea
+                value={heroContent.description || ''}
+                onChange={(e) => setHeroContent({ ...heroContent, description: e.target.value })}
+                rows={4}
+                placeholder="I lead engineering teams and still ship code..."
+              />
+            </div>
+            <div className="form-group">
               <label>Primary CTA Text</label>
               <input
                 type="text"

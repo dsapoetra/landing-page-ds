@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS hero_content (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   subtitle TEXT NOT NULL,
+  description TEXT,
   cta_primary_text VARCHAR(100),
   cta_primary_link VARCHAR(500),
   cta_secondary_text VARCHAR(100),

@@ -24,6 +24,7 @@ interface Experience {
 interface HeroContent {
   title: string;
   subtitle: string;
+  description?: string;
   cta_primary_text?: string;
   cta_primary_link?: string;
   cta_secondary_text?: string;
@@ -221,7 +222,7 @@ function App() {
               {heroContent.subtitle || 'Engineering Manager & Builder'}
             </p>
             <p className="hero-description">
-              I lead engineering teams and still ship code. 10+ years across fintech, ecommerce, and edtech — currently Engineering Manager at OLX Indonesia, available for fractional web work.
+              {heroContent.description || 'I lead engineering teams and still ship code. 10+ years across fintech, ecommerce, and edtech — currently Engineering Manager at OLX Indonesia, available for fractional web work.'}
             </p>
             <div className="hero-cta">
               <button
